@@ -153,7 +153,15 @@
         }
       })
       .pipe(zlib.createUnzip())
-      .pipe(tar.extract(jreDir()));
+      .on('error', err => {
+        console.log(`problem with unzipping the JRE archive: ${err.message}`);
+        callback(err);
+      })
+      .pipe(tar.extract(jreDir()))
+      .on('error', err => {
+        console.log(`problem with extracting files: ${err.message}`);
+        callback(err);
+      });
   };
 
 })();
