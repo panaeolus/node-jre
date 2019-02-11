@@ -21,14 +21,14 @@
  * SOFTWARE.
  */
 
- "use strict";
+"use strict";
 
-(function(){
+(function () {
 
   const os = require('os');
   const fs = require('fs');
   const path = require('path');
-  const rmdir = require('rmdir');
+  const rimraf = require('rimraf');
   const zlib = require('zlib');
   const tar = require('tar-fs');
   const process = require('process');
@@ -44,7 +44,7 @@
 
   var _jreDir;
   const jreDir = exports.jreDir = () => {
-    if(_jreDir){
+    if (_jreDir) {
       return _jreDir;
     }
     return path.join(__dirname, 'jre');
@@ -58,8 +58,11 @@
 
   var _arch = os.arch();
   switch (_arch) {
-    case 'x64': break;
-    case 'ia32': _arch = 'i586'; break;
+    case 'x64':
+      break;
+    case 'ia32':
+      _arch = 'i586';
+      break;
     default:
       fail('unsupported architecture: ' + _arch);
   }
@@ -69,9 +72,17 @@
   var _platform = os.platform();
   var _driver;
   switch (_platform) {
-    case 'darwin': _platform = 'macosx'; _driver = ['Contents', 'Home', 'bin', 'java']; break;
-    case 'win32': _platform = 'windows'; _driver = ['bin', 'javaw.exe']; break;
-    case 'linux': _driver = ['bin', 'java']; break;
+    case 'darwin':
+      _platform = 'macosx';
+      _driver = ['Contents', 'Home', 'bin', 'java'];
+      break;
+    case 'win32':
+      _platform = 'windows';
+      _driver = ['bin', 'javaw.exe'];
+      break;
+    case 'linux':
+      _driver = ['bin', 'java'];
+      break;
     default:
       fail('unsupported platform: ' + _platform);
   }
@@ -109,8 +120,8 @@
       child_process.spawnSync(driver(), getArgs(classpath, classname, args), options);
 
   const smoketest = exports.smoketest = () =>
-    spawnSync(['resources'], 'Smoketest', [], { encoding: 'utf8' })
-    .stdout.trim() === 'No smoke!';
+    spawnSync(['resources'], 'Smoketest', [], {encoding: 'utf8'})
+      .stdout.trim() === 'No smoke!';
 
   const url = exports.url = () =>
     'https://download.oracle.com/otn-pub/java/jdk/' +
@@ -120,49 +131,51 @@
   const install = exports.install = callback => {
     var urlStr = url();
     console.log("Downloading from: ", urlStr);
-    callback = callback || (() => {});
-    rmdir(jreDir());
-    request
-      .get({
-        url: url(),
-        rejectUnauthorized: false,
-        agent: false,
-        headers: {
-          connection: 'keep-alive',
-          'Cookie': 'gpw_e24=http://www.oracle.com/; oraclelicense=accept-securebackup-cookie'
-        }
-      })
-      .on('response', res => {
-        var len = parseInt(res.headers['content-length'], 10);
-        var bar = new ProgressBar('  downloading and preparing JRE [:bar] :percent :etas', {
-          complete: '=',
-          incomplete: ' ',
-          width: 80,
-          total: len
-        });
-        res.on('data', chunk => bar.tick(chunk.length));
-      })
-      .on('error', err => {
-        console.log(`problem with request: ${err.message}`);
-        callback(err);
-      })
-      .on('end', () => {
-        try{
-          if (smoketest()) callback(); else callback("Smoketest failed.");
-        }catch(err){
+    callback = callback || (() => {
+    });
+    rimraf(jreDir(), function () {
+      request
+        .get({
+          url: url(),
+          rejectUnauthorized: false,
+          agent: false,
+          headers: {
+            connection: 'keep-alive',
+            'Cookie': 'gpw_e24=http://www.oracle.com/; oraclelicense=accept-securebackup-cookie'
+          }
+        })
+        .on('response', res => {
+          var len = parseInt(res.headers['content-length'], 10);
+          var bar = new ProgressBar('  downloading and preparing JRE [:bar] :percent :etas', {
+            complete: '=',
+            incomplete: ' ',
+            width: 80,
+            total: len
+          });
+          res.on('data', chunk => bar.tick(chunk.length));
+        })
+        .on('error', err => {
+          console.log(`problem with request: ${err.message}`);
           callback(err);
-        }
-      })
-      .pipe(zlib.createUnzip())
-      .on('error', err => {
-        console.log(`problem with unzipping the JRE archive: ${err.message}`);
-        callback(err);
-      })
-      .pipe(tar.extract(jreDir()))
-      .on('error', err => {
-        console.log(`problem with extracting files: ${err.message}`);
-        callback(err);
-      });
+        })
+        .on('end', () => {
+          try {
+            if (smoketest()) callback(); else callback("Smoketest failed.");
+          } catch (err) {
+            callback(err);
+          }
+        })
+        .pipe(zlib.createUnzip())
+        .on('error', err => {
+          console.log(`problem with unzipping the JRE archive: ${err.message}`);
+          callback(err);
+        })
+        .pipe(tar.extract(jreDir()))
+        .on('error', err => {
+          console.log(`problem with extracting files: ${err.message}`);
+          callback(err);
+        });
+    });
   };
 
 })();
