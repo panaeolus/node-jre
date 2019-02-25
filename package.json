@@ -1,6 +1,6 @@
 {
   "name": "node-jre",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Embeds the Java Runtime Environment into a Node.js app",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/schreiben/node-jre.git"
+    "url": "git+https://github.com/jkawamoto/node-jre.git"
   },
   "keywords": [
     "node",
@@ -24,9 +24,9 @@
   "author": "Tilman Kamp",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/schreiben/node-jre/issues"
+    "url": "https://github.com/jkawamoto/node-jre/issues"
   },
-  "homepage": "https://github.com/schreiben/node-jre#readme",
+  "homepage": "https://github.com/jkawamoto/node-jre#readme",
   "dependencies": {
     "fs": "0.0.1-security",
     "os": "^0.1.1",
