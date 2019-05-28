@@ -77,7 +77,7 @@
   switch (_platform) {
     case 'darwin':
       _platform = 'macosx';
-      _driver = ['Contents', 'Home', 'bin', 'java'];
+      _driver = ['Home', 'bin', 'java'];
       break;
     case 'win32':
       _platform = 'windows';
