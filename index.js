@@ -41,6 +41,7 @@
   const build_number = '11';
   const hash = 'd54c1d3a095b4ff2b6607d096fa80163';
   const version = major_version + 'u' + update_number;
+  const jreDirName = exports.jreDirName = 'jre' + '1' + '.' + major_version + '.' + '0' + '_' + update_number;
 
   var _jreDir;
   const jreDir = exports.jreDir = () => {
