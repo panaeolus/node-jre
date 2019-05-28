@@ -102,11 +102,11 @@
     return path.join.apply(path, d);
   };
 
-  const getArgs = exports.getArgs = (classpath, classname, args) => {
+  const getArgs = exports.getArgs = (jvm_args, classname, args) => {
     args = (args || []).slice();
-    classpath = classpath || [];
+    jvm_args = jvm_args || [];
     args.unshift(classname);
-    args.unshift(classpath.join(platform() === 'windows' ? ';' : ':'));
+    args.unshift(jvm_args.join(" "));
     args.unshift('-cp');
     return args;
   };
