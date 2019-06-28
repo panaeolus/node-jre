@@ -104,6 +104,9 @@
             (_platform !== 'macosx')) {
             d.unshift(jreDirs[0]);
         }
+        if (_platform === 'windows') {
+            d.shift();
+        }
         d.unshift(jreDir());
         return path.join.apply(path, d);
     };
@@ -112,8 +115,7 @@
         args = (args || []).slice();
         jvm_args = jvm_args || [];
         args.unshift(classname);
-        args.unshift(jvm_args.join(" "));
-        args.unshift('-cp');
+        // args.unshift(jvm_args.join(" "));
         return args;
     };
 
