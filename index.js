@@ -104,9 +104,7 @@
             (_platform !== 'macosx')) {
             d.unshift(jreDirs[0]);
         }
-        if (_platform === 'windows') {
-            d.shift();
-        }
+        d.shift();
         d.unshift(jreDir());
         return path.join.apply(path, d);
     };
